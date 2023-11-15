@@ -174,8 +174,9 @@ A Flow Network graph consists of 4 private collections or objects:
 1. A Dictionary<String, List&lt;Node>> containing lists of the nodes connected by an edge to the initial node; an adjacency matrix .  The list is accessed by the source node's Label.
 1. A RCM-object used to find incremental flows.
 
-A Flow Network graph consists of 8 public methods:
+A Flow Network graph consists of 9 public methods:
 * A constructor taking an array of "source-label, destination-label, capacity" _edge_ strings.  It will process each string, adding the edge and nodes to the appropriate private dictionaries. Note: edges and nodes may only be added during instantiation.
+* CalculateResidualCapacity -- clears existing RCM and then follows the algorithm above to fill it based on current edge states.  Method is public to facilitate testing.
 * BreadthFirstSearch(String start)-- which takes a string representing the starting node.  It must follow the BFS algorithm given above.  This method determines and assigns graph nodes' Parent and Color properties with the values calculated by the search.  This method is 'public' to facilitate testing.
 * SolveFlow(String start, String finish) - which takes strings representing the source and sink nodes.  It must follow the "Finding the Maximum Flow" algorithm above. This method determines and assigns the Flow property value for all th graph's edges. 
 * Three IEnumerable<> methods
