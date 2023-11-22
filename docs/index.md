@@ -83,7 +83,7 @@ We will be loading graphs from files.  As in your labs, these files contain list
 
 The software architecture is shown in the following class diagram:
 
-<img src="C:\Users\rhowell\source\300 Fall 23\Homework 6 Instructions\KSU-CIS-Fall2023-hw6.github.io\docs\images\ClassDiagram.png" alt="ClassDiagram" style="zoom:67%;" />
+<img src="images\ClassDiagram.png" alt="ClassDiagram" style="zoom:67%;" />
 
 The **UserInterface** class implements the GUI (see below). The **NetworkGraph** class implements the graph combining the flow network and the residual capacity graph. The **EdgeData** class stores the data on each edge. Each of these is described in detail in the coding requirements that follow.
 
