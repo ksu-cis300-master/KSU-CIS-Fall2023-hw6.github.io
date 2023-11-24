@@ -57,27 +57,25 @@ Because the residual capacity graph consists of exactly the same nodes and a sup
 
 ## Finding the Maximum Flow
 
-We will represent our flow network as graph with a set of nodes (N) and edges (E), G = (N, E).
+**Note:** What follows is a somewhat more streamlined presentation of the algorithm than what is shown in the video, though the processing is essentially the same. You should refer to the following presentation when writing your code.
 
-**Note:** What follows is a somewhat more streamlined presentation of the algorithm than what is shown in the video, though the processing is essentially the same. You should refer to this presentation when writing your code.
-
-Once the flow network (with all Flows set to 0) and the associated residual capacity graph are initialized the algorithm repeatedly performs a breadth first search to find a path from s to t in the residual network. As long as such a path is found:
+Once the flow network (with all Flows set to 0) and the associated residual capacity graph are initialized, the algorithm repeatedly performs breadth first searches to find shortest paths from s to t in the residual network. As long as the breadth first search finds such a path:
 
 1.  Find the minimum ResidualCapacity of the edges in the path; this represents an incremental flow which can be added to the network
 1.  Update the Flow and ResidualCapacity properties along this path to reflect this additional flow (see below)
 
-When no path s~>t can be found, the flows in the graph (G) represent a maximum flow from s to t. Note again that the breadth first search in the above algorithm ignores all edges whose ResidualCapacity is 0. In the next section, we will describe step 2 of the above loop in more detail.
+When no path s~>t can be found, the flows in the graph represent a maximum flow from s to t. Note again that the breadth first search in the above algorithm ignores all edges whose ResidualCapacity is 0. In the next section, we will describe step 2 of the above loop in more detail.
 
 ### Updating the Flows and the ResidualCapacities
 
-Recall that a breadth first search (see Lab Assignment 34) returns a dictionary whose keys are nodes. The value associated with each node other than s is its predecessor along a shortest path from s to that node, and the value associated with s is s itself. As in Lab Assignments 33 and 34, we will need to process the path from s to t backwards - from t to s. As we work our way from t to s, we make use of edges in both directions along this path. In what follows, we will refer to the edges going from s to t as *path edges* and the edges going in the opposite direction as *back edges*.
+Recall that a breadth first search (see Lab Assignment 34) gives us a dictionary whose keys are nodes. The value associated with each node other than s is its predecessor along a shortest path from s to that node, and the value associated with s is s itself. As in Lab Assignments 33 and 34, we will need to process the path from s to t backwards - from t to s. As we work our way from t to s, we make use of edges in both directions along this path. In what follows, we will refer to the edges going from s to t as *path edges* and the edges going in the opposite direction as *back edges*.
 
 For each path edge and its associated back edge, we need to adjust ResidualCapacities to account for the flow being added. Because the flow will be added in the direction of the path edge, we need to *decrease* the ResidualCapacity of each path edge by the amount of the additional flow. On the other hand, we need to *increase* the ResidualCapacity of each back edge by this same amount.
 
 To add the flow, we first need to determine which of each pair of edges is in the flow network. Specifically, if the path edge has a Capacity of 0, then the back edge is in the flow network. In this case, we need to *decrease* the Flow on the back edge by the amount of the additional flow. Otherwise, the path edge is in the flow network. In this case, we need to *increase* the Flow on the path edge by this amount.
 
 ## Graph Data Files
-We will be loading graphs from files.  As in your labs, these files contain lists of edges, one per line.  The format of a line is "source node, destination node, edge capacity".  A few graph files can be found in the repository's Data folder.  
+We will be loading graphs from files.  As in your labs, these files contain lists of edges, one per line.  The format of a line is "source-node, destination-node, edge-capacity".  A few graph files can be found in the repository's Data folder.  
 
 ## Software Architecture
 
@@ -85,7 +83,7 @@ The software architecture is shown in the following class diagram:
 
 <img src="images\ClassDiagram.png" alt="ClassDiagram" style="zoom:67%;" />
 
-The **UserInterface** class implements the GUI (see below). The **NetworkGraph** class implements the graph combining the flow network and the residual capacity graph. The **EdgeData** class stores the data on each edge. Each of these is described in detail in the coding requirements that follow.
+The **UserInterface** class implements the GUI (see below). The **NetworkGraph** class implements the graph combining the flow network and the residual capacity graph. The **EdgeData** class stores the data on each edge. Each of these is described in detail in the coding requirements that follow. The names of all **public** members need to match those shown above so that the provided unit test code compiles. You may use different names for **private** members, as long as you follow the [naming conventions for CIS 300](https://cis300.cs.ksu.edu/appendix/style/naming/index.html).
 
 ## Coding Requirements
 
@@ -94,7 +92,7 @@ The **UserInterface** class implements the GUI (see below). The **NetworkGraph**
 The **EdgeData** class needs a single **private** field, an **int** to store the flow placed on an edge. It also needs the following **public** properties:
 
 - **Capacity**: Gets an **int** giving the capacity of an edge. It should *not* have a **set** accessor.
-- **Flow**: Gets or sets an **int** giving the flow placed on an edge. Its **get** accessor should return the value stored in the **private** field. Its **set** accessor should do some error checking before assigning the given value to the private field. Specifically, if the given value is less than 0 or greater than the **Capacity**, it should throw an **ArgumentException** and leave the field unchanged.
+- **Flow**: Gets or sets an **int** giving the flow placed on an edge. Its **get** accessor should return the value stored in the **private** field. Its **set** accessor should do some error checking before assigning the given value to the **private** field. Specifically, if the given value is less than 0 or greater than the **Capacity**, it should throw an **ArgumentException** and leave the field unchanged.
 - **ResidualCapacity**: Gets or sets an **int** giving the residual capacity for an edge.
 
 It should also have a **public** constructor and a **public** method. These are described in what follows.
@@ -127,7 +125,7 @@ The **NetworkGraph** class also contains 5 **public** methods and a **public** c
 
 #### A public constructor
 
-The constructor should take as its only parameter an array of strings, each in the same form as a line of an input file"source-label, destination-label, capacity"; thus, each string describes an edge of the flow network.  It will process each string, adding the edge and its reverse edge to the graph. The graph built should be a combination of the flow network and the residual capacity graph; thus, the capacity of each reverse edge should be 0. **Note:** edges and nodes may only be added during instantiation.
+The constructor should take as its only parameter an array of strings, each in the same form as a line of an input file: "source-node, destination-node, edge-capacity"; thus, each string describes an edge of the flow network.  The constructor should process each string, adding the edge and its reverse edge to the graph. The graph built should be a combination of the flow network and the residual capacity graph; thus, the capacity of each reverse edge should be 0. **Note:** edges and nodes may only be added during instantiation.
 
 #### A public GetOutgoingEdges method
 
@@ -147,7 +145,7 @@ This method should take as its only parameter a string giving a node. It should 
 
 #### A public GraphDisplay method
 
-This method should take no parameters and should return a string describing the edges of the graph. The string should contain a description of each edge, with successive descriptions separated by `\r\n`. The description of each edge should be of the form "*source-node* -\> *destination-node* : *flow* / *capacity*". Build the string using a **StringBuilder**. After converting the **StringBuilder** to a string, use the string's **Trim** method to remove any white space from the ends of the string.
+This method should take no parameters and should return a string describing the edges of the graph. The string should contain a description of each edge of the flow network, with successive descriptions separated by `\r\n`. The description of each edge should be of the form "*source-node* -\> *destination-node* : *flow* / *capacity*". Ignore any edges with a **Capacity** of 0. Build the string using a **StringBuilder**. After converting the **StringBuilder** to a string, use the string's **Trim** method to remove any white space from the ends of the string.
 
 #### Private Methods
 
@@ -162,7 +160,7 @@ The User Interface is described below. Building it is a student task.  It should
 
 ### Controls
 
-* "Load" button -- used to select a file from which to load a graph, see below.
+* "LOAD" button -- used to select a file from which to load a graph, see below.
 * "Graph Display" **TextBox** -- used to display the edges of the graph.  It should be read-only, multi-line and have vertical and horizontal scroll bars.
 * "Source" **ListBox** -- used to select the source node. Ensure **SelectionMode** is **One**. You will use its **SelectedItem** and **Items** properties and **SetSelected** method in your code - see https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.listbox?view=windowsdesktop-7.0&viewFallbackFrom=net-6.0
 * "Destination" **ListBox** -- used to select  the sink node. Ensure **SelectionMode** is **One**. You will use its **SelectedItem** and **Items** properties and **SetSelected** method in your code - see https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.listbox?view=windowsdesktop-7.0&viewFallbackFrom=net-6.0
@@ -189,9 +187,10 @@ You may have as many private methods as you deem necessary to provide the behavi
       * Populate both **ListBox**es with their own lists of nodes. Each of these lists should be sorted (use a **List\<string\>**'s [**Sort**](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.sort?view=net-6.0#system-collections-generic-list-1-sort) method). If the "Source" **ListBox** contains a node "s" (see the [**IndexOf**](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.indexof?view=net-6.0#system-collections-generic-list-1-indexof(-0)) method of a **List\<string\>**), make this item selected in the **ListBox**. If the "Destination" **ListBox** contains a node "t", make this item selected in the **ListBox**.
       * Populate the "Graph Display" **TextBox** with a string representation of the graph, obtained from the appropriate method of the **NetworkGraph?**.  This representation should consist of one edge per line, each having the form "*source-node* -> *destination-node* : *flow* / *capacity*". Each edge's flow should be 0 at this point.
 * Clicking "Solve Button" should do nothing if a graph hasn't been loaded. Otherwise:
-    * Open a **MessageBox** prompting user to select Source and Destination in the list boxes if either's **SelectedItem** is **null**. Then exit the method.
-    * Use the selections in the **ListBox**es to find a maximum flow using the appropriate method of the **NetworkGraph?**; update the "Graph Display" **TextBox** with a string representation of the graph with the maximum flow assigned to the edges.
-    * Use the selections in the **ListBox**es to find the value of the maximum flow using the appropriate method of the **NetworkGraph?**, and update the "Flow Results" **TextBox**.  The Display should be of the form, "Net Flow from _source_ to _destination_ is *value*".
+    * Using the appropriate method of the **NetworkGraph?**, remove any flow that might exist in the graph.
+    * Use the selections in the **ListBox**es to find a maximum flow using the appropriate method of the **NetworkGraph?**.
+    * Update the "Graph Display" **TextBox** with a string representation of the graph with the maximum flow assigned to the edges.
+    * Update the "Flow Results" **TextBox**.  The Display should be of the form, "Net Flow from _source_ to _destination_ is *value*".
 
 ## Testing Your Code
 
